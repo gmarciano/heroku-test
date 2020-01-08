@@ -18,7 +18,7 @@
                  :class="[ active === mi ? 'md:w-1/2' : 'darker rounded-r-lg' ]">
               <img :src="movie.poster_path ? `${imagePath}${movie.poster_path}` : 'images/404.svg'"
                    :alt="movie.title + ' Poster' "
-                   :class="{ 'opacity-75 bg-gray-300 h-full': ! movie.poster_path }"
+                   class="h-full" :class="{ 'opacity-75 bg-gray-300': ! movie.poster_path }"
                    @click.prevent="tooglePoster(mi)"
                    @mouseover.prevent="expandPoster(mi)"
                    @mouseleave.prevent="shrinkPoster(mi)" />
