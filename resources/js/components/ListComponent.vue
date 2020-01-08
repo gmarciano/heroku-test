@@ -186,10 +186,6 @@
                 width: 23% !important;
             }
 
-            @media screen and (min-width: 1600px) {
-                width: 23.5% !important;
-            }
-
             &.active {
               height: 75%;
               width: 50% !important;
