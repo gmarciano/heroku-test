@@ -18,7 +18,7 @@
                  :class="[ active === mi ? 'md:w-1/2' : 'darker rounded-r-lg' ]">
               <img :src="movie.poster_path ? `${imagePath}${movie.poster_path}` : 'images/404.svg'"
                    :alt="movie.title + ' Poster' "
-                   class="h-full" :class="{ 'opacity-75 bg-gray-300': ! movie.poster_path }"
+                   class="h-full w-full" :class="{ 'opacity-75 bg-gray-300': ! movie.poster_path }"
                    @click.prevent="tooglePoster(mi)"
                    @mouseover.prevent="expandPoster(mi)"
                    @mouseleave.prevent="shrinkPoster(mi)" />
@@ -267,13 +267,13 @@
   }
 
   ::-webkit-scrollbar {
-    width: .25rem;
+    width: .25em;
   }
   ::-webkit-scrollbar-track {
     box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   }
   ::-webkit-scrollbar-thumb {
     background-color: darkgrey;
-    outline: .25rem solid slategrey;
+    outline: .25em solid slategrey;
   }
 </style>
