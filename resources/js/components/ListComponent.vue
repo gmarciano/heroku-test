@@ -178,6 +178,18 @@
             margin: 0 15px;
             width: 22% !important;
 
+            @media screen and (min-width: 1920px) {
+                width: 22.5% !important;
+            }
+
+            @media screen and (min-width: 2560px) {
+                width: 23% !important;
+            }
+
+            @media screen and (min-width: 1600px) {
+                width: 23.5% !important;
+            }
+
             &.active {
               height: 75%;
               width: 50% !important;
