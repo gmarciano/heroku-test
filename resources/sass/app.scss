@@ -1,1 +1,21 @@
-//
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#app {
+  background: #333333;
+  color: #f3f3f3;
+  font-family: 'Montserrat', sans-serif;
+
+  .header {
+    height: 17vh;
+  }
+
+  .content {
+    height: 83vh;
+  }
+
+  .darker {
+    filter: brightness(0.5);
+  }
+}
