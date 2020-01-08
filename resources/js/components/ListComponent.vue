@@ -176,7 +176,7 @@
 
           .vueperslide {
             margin: 0 15px;
-            width: 25% !important;
+            width: 22% !important;
 
             &.active {
               height: 75%;
