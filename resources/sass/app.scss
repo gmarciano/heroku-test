@@ -8,7 +8,11 @@
   font-family: 'Montserrat', sans-serif;
 
   .header {
-    height: 17vh;
+    height: 13vh;
+
+    @media screen and (min-width: 1024px) {
+      height: 14vh;
+    }
   }
 
   .content {
@@ -17,5 +21,67 @@
 
   .darker {
     filter: brightness(0.5);
+  }
+
+  #movie-genres {
+    .action {
+      background-color: #f50000;
+    }
+    .adventure {
+      background-color: #F17105;
+    }
+    .animation {
+      background-color: #402536;
+    }
+    .crime {
+      background-color: #4E1A0F;
+    }
+    .comedy {
+      background-color: #FFB018;
+      color: #664909 !important;
+    }
+    .documentary {
+      background-color: #262E31;
+    }
+    .drama {
+      background-color: #640aa8;
+    }
+    .family {
+      background-color: #A5B452;
+      color: #474D23 !important;
+    }
+    .fantasy {
+      background-color: #BC401A;
+    }
+    .history {
+      background-color: #A0522D;
+    }
+    .horror {
+      background-color: #150506;
+    }
+    .music {
+      background-color: #1846B3;
+    }
+    .mystery {
+      background-color: #2E4052;
+    }
+    .romance {
+      background-color: #D11149;
+    }
+    .science-fiction {
+      background-color: #181E38;
+    }
+    .thriller {
+      background-color: #12101D;
+    }
+    .tv-movie {
+      background-color: #C89F9C;
+    }
+    .war {
+      background-color: #184a0b;
+    }
+    .western {
+      background-color: #8B4513;
+    }
   }
 }

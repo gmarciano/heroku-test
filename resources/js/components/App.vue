@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col justify-between max-h-screen h-screen max-w-screen overflow-hidden">
-    <div id="backdrop" class="fixed top-0 bottom-0 left-0 right-0 opacity-50"
+    <div id="backdrop" class="fixed top-0 bottom-0 left-0 right-0 opacity-75 darker"
          :style="{ backgroundImage: `url(${backdrop})` }">
     </div>
 
@@ -19,7 +19,8 @@
       :movies="movies"
       :image-path="imagePath"
       :is-mobile="isMobile"
-      @changeBackdrop="changeBackdrop">
+      @changeBackdrop="changeBackdrop"
+      @updateMovies="changeMoviesArray">
     </ListComponent>
   </div>
 </template>
@@ -57,6 +58,15 @@
       changeBackdrop(backdrop) {
         this.backdrop = backdrop;
       },
+      changeMoviesArray({ action }) {
+        if (action === 'forward') {
+          const removedEl = this.movies.shift()
+          this.movies.push(removedEl)
+        } else {
+          const removedEl = this.movies.pop()
+          this.movies.unshift(removedEl)
+        }
+      },
       async getUpcomingMovies() {
         this.loading = true;
 
@@ -71,8 +81,12 @@
           this.page++;
           this.getUpcomingMovies();
         } else {
+          for (let i = 0; i < 3; i++) {
+            const removedEl = this.allMovies.pop();
+            this.allMovies.unshift(removedEl);
+          }
+
           this.movies = this.allMovies;
-          console.log(this.movies);
           this.loading = false;
         }
       },
@@ -88,7 +102,7 @@
 
         const searchRegex = new RegExp(search, 'i');
 
-        this.movies = this.allMovies.filter(movie => {
+        this.movies = this.allMovies.filter((movie, index) => {
           return movie.title.match(searchRegex);
         });
 

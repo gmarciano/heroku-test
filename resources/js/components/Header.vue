@@ -1,10 +1,10 @@
 <template>
-  <div class="flex justify-between items-center px-10 py-5 z-10 header">
-    <h1 class="text-5xl font-semibold" v-show="! isMobile || ! showSearch">Moovie</h1>
+  <div class="flex justify-between items-center px-4 lg:px-10 py-5 z-10 header">
+    <h1 class="text-xl md:text-5xl font-semibold" v-show="! isMobile || ! showSearch">Moovie</h1>
 
     <div id="search" class="flex items-center h-full">
       <div class="flex items-center py-2" :class="{ 'border-b': ! isMobile || showSearch }">
-        <img class="w-6 cursor-pointer" alt="Search icon" src="images/search-icon.svg"
+        <img class="w-4 cursor-pointer" alt="Search icon" src="images/search-icon.svg"
              @click.prevent="expandSearch()" />
         <input id="search-input" ref="search"
                class="bg-transparent ml-2 w-0 md:w-64 text-xl"

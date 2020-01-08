@@ -1,7 +1,6 @@
 <template>
   <div id="list" class="h-full max-h-full max-w-full overflow-hidden">
     <vueper-slides class="no-shadow" ref="slider"
-                   disable-arrows-on-edges
                    :breakpoints="slideBreakpoints"
                    :arrows-outside="false"
                    :bullets="false"
@@ -9,27 +8,33 @@
                    :touchable="isMobile"
                    :visible-slides="4"
                    @before-slide="handleChange($event)">
-      <vueper-slide v-for="(movie, mi) in movies" :key="mi" :class="{ 'active': active === mi }">
+      <vueper-slide v-for="(movie, mi) in shownMovies" :key="mi" :class="{ 'active': active === mi }">
         <template v-slot:content>
-          <div class="card bg-white max-h-full rounded-t-lg shadow-2xl text-center overflow-hidden md:rounded-b-lg lg:mx-auto"
-               :class="[ active === mi ? 'focused flex h-full w-11/12 md:w-full p-0' : 'bg-gray-200 p-1 mt-16 md:mt-0' ]"
+          <div class="card bg-white max-h-full rounded-t-lg shadow-2xl text-center overflow-hidden mx-auto md:rounded-b-lg"
+               :class="[ active === mi ? 'focused h-full p-0 w-11/12 md:flex lg:w-full' : 'bg-gray-200 p-1 mt-16 md:mt-0' ]"
                @click="goToMovie(mi)">
-            <div class="card-image h-full max-w-full overflow-hidden rounded-l-lg relative"
-                 :class="[ active === mi ? 'md:w-1/2' : 'darker rounded-r-lg' ]">
+            <div class="card-image max-w-full overflow-hidden relative p-1 rounded-b-lg md:rounded-b-none md:p-0 lg:h-full lg:rounded-l-lg"
+                 :class="[ active === mi ? 'md:w-1/2' : 'darker lg:rounded-r-lg' ]"
+                 :style="[ active === mi ? { 'maxHeight': posterHeight } : '' ]">
               <img :src="movie.poster_path ? `${imagePath}${movie.poster_path}` : 'images/404.svg'"
                    :alt="movie.title + ' Poster' "
-                   class="h-full w-full" :class="{ 'opacity-75 bg-gray-300': ! movie.poster_path }"
-                   @click.prevent="tooglePoster(mi)"
-                   @mouseover.prevent="expandPoster(mi)"
-                   @mouseleave.prevent="shrinkPoster(mi)" />
+                   class="h-full w-full rounded-lg md:rounded-none"
+                   :class="{ 'opacity-75 bg-gray-300': ! movie.poster_path }" />
+
+              <div class="info absolute py-2 px-1 flex justify-end rounded-b-lg md:hidden"
+                   :class="[ posterHeight === '45%' ? 'bottom-0' : 'bottom' ]">
+                <button @click.prevent="tooglePoster()">
+                  <img src="images/info.svg" alt="More info" class="info-icon w-6" />
+                </button>
+              </div>
             </div>
 
-            <div class="card-data max-h-full max-w-full text-center overflow-auto md:text-left px-5 lg:py-6"
+            <div class="card-data max-h-full max-w-full text-center overflow-hidden md:text-left px-5 py-3 md:py-6"
                  :class="{ 'md:w-1/2': active === mi }"
                  v-show="active === mi">
-              <div class="flex items-center justify-between">
+              <div class="flex items-center justify-center md:justify-between">
                 <div :class="{ 'w-4/6': movie.adult } ">
-                  <h3 class="text-2xl md:text-4xl lg:text-3xl text-gray-800 font-semibold mb-2">
+                  <h3 class="text-lg md:text-xl lg:text-2xl text-gray-800 font-semibold mb-2 leading-none">
                     {{ movie.title }}
                   </h3>
                 </div>
@@ -39,21 +44,21 @@
                 </div>
               </div>
 
-              <div id="movie-genres" class="flex flex-wrap -mx-2 opacity-75">
+              <div id="movie-genres" class="flex flex-wrap -mx-2 opacity-75 justify-center md:justify-start">
                 <div v-for="(genre, gi) in movie.genre_ids"
-                     class="rounded-full px-2 py-1 m-1 cursor-pointer"
+                     class="rounded-full px-2 py-1 m-1"
                      :class="[ genres[genre].replace(' ', '-').toLowerCase() ]">
-                  <p class="md:text-xl md:text-sm lg:text-xs text-gray-100 mb-0">{{ genres[genre] }}</p>
+                  <p class="text-xs text-gray-100 mb-0">{{ genres[genre] }}</p>
                 </div>
               </div>
 
               <div v-if="active === mi">
-                <p class="text-xl md:text-2xl lg:text-base text-gray-800 my-3">
+                <p class="description text-sm text-gray-800 my-3 overflow-auto">
                   {{ movie.overview || 'No description available' }}
                 </p>
               </div>
 
-              <p class="text-lg md:text-xl lg:text-sm text-gray-600 font-semibold mt-2">
+              <p class="text-sm text-red-700 font-semibold mt-2">
                 Coming out {{ movie.release_date | formatDate }}
               </p>
             </div>
@@ -78,8 +83,10 @@
     props: [ 'genres', 'movies', 'imagePath', 'isMobile' ],
     data() {
       return {
-        active: 0,
-        posterHeight: '45%',
+        shownMovies: [],
+        shownMoviesLength: 7,
+        active: 3,
+        posterHeight: '100%',
         slideBreakpoints: {
           1200: {
             arrows: false,
@@ -96,60 +103,118 @@
     },
     methods: {
       handleChange(event, index = false) {
-        // Force arrow to show after first change
-        if (this.currentSlide === undefined) {
-          const arrowPrev = document.getElementsByClassName('vueperslides__arrow--prev')[0];
-          arrowPrev.style.display = 'inline-block';
+        if (index) {
+          if (index > this.active) {
+            while (index > this.active) {
+              this.$emit('updateMovies', { action: 'forward' });
+              index--;
+            }
+          } else if (index < this.active) {
+            while (index < this.active) {
+              this.$emit('updateMovies', { action: 'back' });
+              index++;
+            }
+          }
+        } else {
+          if (event.currentSlide.index === 0 && event.nextSlide.index === 6) {
+            this.$emit('updateMovies', { action: 'back' });
+          } else if (
+            event.currentSlide === undefined ||
+            event.currentSlide.index < event.nextSlide.index ||
+            event.currentSlide.index === 6 && event.nextSlide.index === 0
+          ) {
+            this.$emit('updateMovies', { action: 'forward' });
+          } else {
+            this.$emit('updateMovies', { action: 'back' });
+          }
         }
 
-        if (event.nextSlide || index !== false) {
-          this.active = index === false ? event.nextSlide.index : index;
-
-          const backdrop = `${this.imagePath}${this.movies[this.active].backdrop_path}`;
-          this.$emit('changeBackdrop', backdrop);
-        }
+        const backdrop = `${this.imagePath}${this.movies[this.active].backdrop_path}`;
+        this.$emit('changeBackdrop', backdrop);
       },
       goToMovie(movieIndex) {
         this.handleChange(false, movieIndex);
-        this.$refs.slider.goToSlide(movieIndex);
       },
-      expandPoster(index) {
-        if (index === this.active) this.posterHeight = '100%';
+      tooglePoster() {
+        this.posterHeight = this.posterHeight === '100%' ? '45%' : '100%';
       },
-      shrinkPoster(index) {
-        if (index === this.active) this.posterHeight = '45%';
-      },
-      tooglePoster(index) {
-        if (index === this.active) {
-          this.posterHeight = this.posterHeight === '45%' ? '100%' : '45%';
+    },
+    watch: {
+      movies(newValue) {
+        this.shownMovies = newValue.slice(0, this.shownMoviesLength);
+
+        if (this.shownMovies.length < 7) {
+          this.active = Math.floor(this.shownMovies.length / 2);
+        } else {
+          this.active = 3;
         }
       }
-    },
-    updated() {
-      const sliderInner = document.getElementsByClassName('vueperslides__track-inner')[0],
-        transitionValues = sliderInner.style.transform.split(/\w+\(|\);?/),
-        matrix = transitionValues[1].split(/,\s?/g).map(parseInt);
-
-      if (matrix[0] > 0) sliderInner.style.transform = 'translate3d(0, 0, 0)';
     }
   }
 </script>
 
 <style lang="scss">
+  .card {
+    .card-image {
+      .info {
+        left: 0.25rem;
+        right: 0.25rem;
+        background: linear-gradient(to top, #0000008c, transparent);
+
+        &.bottom {
+          bottom: 0.25rem;
+        }
+
+        .info-icon {
+          filter: invert(1);
+        }
+      }
+    }
+
+    .card-data {
+      .description {
+        max-height: 150px;
+
+        @media screen and (min-width: 1024px) {
+          max-height: 240px;
+        }
+      }
+    }
+
+    @media screen and (max-width: 760px) {
+      height: 85vh;
+    }
+  }
+
   .vueperslides__arrows {
-    height: 85vh;
-    position: absolute;
-    top: 0;
+    height: 15vh;
+    position: fixed;
     right: 0;
     bottom: 0;
     left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 30;
 
     .vueperslides__arrow {
+      border: 1px solid #ffffff;
+      border-radius: 75px;
+      margin: 0 15px;
+      position: unset;
       outline: none !important;
+      transform: none;
 
-      // Prevents arrow to showing up before needed
       &--prev {
-        display: none;
+        padding: 0 4px 0 2px;
+      }
+
+      &--next {
+        padding: 0 2px 0 4px;
+      }
+
+      svg {
+        width: 2.5em;
       }
     }
   }
@@ -158,33 +223,37 @@
     padding-bottom: 200% !important;
 
     .vueperslides__track {
-      height: 85vh;
+      height: 87vh;
       padding: 0 15px;
 
       .vueperslides__track-inner {
         display: flex;
         align-items: flex-end;
+        justify-content: center;
+        transform: none !important;
+
+        .vueperslide {
+          max-height: 100%;
+        }
       }
 
-      @media screen and (min-width: 1024px) {
-        height: 83vh;
-        padding: 0 115px;
+      @media screen and (min-width: 768px) {
+        padding: 0;
 
         .vueperslides__track-inner {
           display: flex;
           align-items: center;
+        }
+      }
 
+      @media screen and (min-width: 1024px) {
+        height: 80vh;
+        padding: 0 115px;
+
+        .vueperslides__track-inner {
           .vueperslide {
             margin: 0 15px;
             width: 22% !important;
-
-            @media screen and (min-width: 1920px) {
-                width: 22.5% !important;
-            }
-
-            @media screen and (min-width: 2560px) {
-                width: 23% !important;
-            }
 
             &.active {
               height: 75%;
@@ -209,68 +278,6 @@
           }
         }
       }
-    }
-  }
-
-  #movie-genres {
-    .action {
-      background-color: #f50000;
-    }
-    .adventure {
-      background-color: #F17105;
-    }
-    .animation {
-      background-color: #402536;
-    }
-    .crime {
-      background-color: #4E1A0F;
-    }
-    .comedy {
-      background-color: #FFB018;
-      color: #664909 !important;
-    }
-    .documentary {
-      background-color: #262E31;
-    }
-    .drama {
-      background-color: #640aa8;
-    }
-    .family {
-      background-color: #A5B452;
-      color: #474D23 !important;
-    }
-    .fantasy {
-      background-color: #BC401A;
-    }
-    .history {
-      background-color: #A0522D;
-    }
-    .horror {
-      background-color: #150506;
-    }
-    .music {
-      background-color: #1846B3;
-    }
-    .mystery {
-      background-color: #2E4052;
-    }
-    .romance {
-      background-color: #D11149;
-    }
-    .science-fiction {
-      background-color: #181E38;
-    }
-    .thriller {
-      background-color: #12101D;
-    }
-    .tv-movie {
-      background-color: #C89F9C;
-    }
-    .war {
-      background-color: #184a0b;
-    }
-    .western {
-      background-color: #8B4513;
     }
   }
 
