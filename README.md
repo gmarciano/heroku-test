@@ -3,19 +3,20 @@
 
 ## About Moovie
 Moovie is a web application designed at first to show a list of upcoming movies,
-and for that consumes a third-party API (TMDb) as the main database.
+and for that it consumes a third-party API (TMDb) as the main database.
 The app is a MVP, and it's public, so feel free to submit a PR :)
 <br>
 
 You can access the [live demo here.](https://upcomingmoovie.herokuapp.com)
 <br>
 
-To run it on your environment all you gotta do is get a key for TMDb API, and run the following commands: 
+To run it on your environment all you gotta do is run the following commands: 
 ```bash
 $ composer install
 $ npm install --save
 $ npm run watch
 ```
+After that you need to get a [TMDb API key](https://developers.themoviedb.org/3/getting-started/introduction) and set it in the **.env** file
 
 <br>
 
@@ -27,13 +28,23 @@ As a PHP developer I made the project in Laravel using Laravel mix, this way we 
 | Backend  | Laravel    |
 | Frontend | Vue        |
 
-Beside this I opted to use tailwind as my CSS framework.
+Besides this I opted to use tailwind as my CSS framework.
 
 <br>
 
-## More about it
-The project was not designed, so I used what I know about UX/UI to made the front.
-Any ideas about how to improve it will be welcomed.
+## Overall impression
+The project had no layout design, so I used my knowledge in UX and UI to come up with it.
+###### *(Any ideas about how to improve it will be welcomed)*
+Also, I had a 5 days deadline to delivery this project, so it was made in a kinda of rush, but there are some fixes that I gotta do.
+
+<br>
+
+## Things to improve
+- [ ] Change the 'Comming out' layout
+- [ ] Create a loading response while searching
+- [ ] Create a filter for movie genre on click
+- [ ] Create a language manager
+- [ ] Create my own list component and remove vueperslides
 
 <br>
 
