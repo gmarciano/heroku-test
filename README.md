@@ -41,7 +41,7 @@ Also, I had a 5 days deadline to delivery this project, so it was made in a kind
 
 ## Things to improve
 - [ ] Add error handling (try/catch and error feedback)
-- [ ] Create my own list component and remove vueperslides
+- [ ] Change vueperslides for css snap
 - [ ] Change the 'Comming out' layout
 - [ ] Create a loading response while searching
 - [ ] Create a filter for movie genre on click
